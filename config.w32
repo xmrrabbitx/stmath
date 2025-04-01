@@ -1,0 +1,7 @@
+ARG_ENABLE('stmath', 'stmath support', 'no');
+
+if (PHP_STMATH != 'no') {
+	AC_DEFINE('HAVE_STMATH', 1, 'stmath support enabled');
+
+	EXTENSION('stmath', 'stmath.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
