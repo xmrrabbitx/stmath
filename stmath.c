@@ -16,10 +16,12 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
+
 PHP_FUNCTION(stmathMedian){
 
 
 	zend_array *arr;
+	double *values = NULL;
 	zend_ulong count;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) {
@@ -29,7 +31,17 @@ PHP_FUNCTION(stmathMedian){
 	}
 	
 	count = zend_hash_num_elements(arr);
-	RETURN_LONG(count);
+	if (count == 0) {
+        	RETURN_NULL();
+    	}
+	
+	// Allocate memory for values
+	values = emalloc(count * sizeof(double));
+	if (!values) {
+		php_error_docref(NULL, E_WARNING, "Memory allocation failed");
+		RETURN_NULL();
+	}
+	
 }
 
 
