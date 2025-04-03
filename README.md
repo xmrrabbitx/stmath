@@ -7,7 +7,7 @@ $ cd to /yourPhpVersion path
 $ git clone https://github.com/xmrrabbitx/stmath.git 
 ```
 ```bash
-$ cd stmath directory
+$ cd /stmath directory
 ```
 ```bash
 $ ../bin/phpize
