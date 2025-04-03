@@ -17,12 +17,25 @@
 #endif
 
 
+// Comparison function for qsort
+static int compare_doubles(const void *a, const void *b) {
+
+	double arg1 = *(const double*)a;
+	double arg2 = *(const double*)b;
+
+	if (arg1 < arg2) return -1;
+	if (arg1 > arg2) return 1;
+	return 0;
+}
+
+
 PHP_FUNCTION(stmathMedian){
 
 
 	zend_array *arr;
 	double *values = NULL;
 	zend_ulong count;
+	zval *val;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) {
 
@@ -41,8 +54,52 @@ PHP_FUNCTION(stmathMedian){
 		php_error_docref(NULL, E_WARNING, "Memory allocation failed");
 		RETURN_NULL();
 	}
+
+	// Copy numeric values to our double array
+	zend_ulong i = 0;
+	ZEND_HASH_FOREACH_VAL(arr,val){
+		// Convert to double if numeric
+		if (Z_TYPE_P(val) == IS_LONG) {
+			values[i++] = (double)Z_LVAL_P(val);
+		}
+		else if(Z_TYPE_P(val) == IS_DOUBLE) {
+			values[i++] = (double)Z_DVAL_P(val);
+
+		}else{
+
+			// Skip non-numeric values (reduce count)
+			count--;
+		
+		}
+			
+	} ZEND_HASH_FOREACH_END();
 	
+	// Check if we have any values left
+	if(count==0){
+
+		efree(values);
+		php_error_docref(NULL, E_WARNING, "Array contains no numeric values");
+		RETURN_NULL();
+	}
+
+	// Sort the values
+	qsort(values, count, sizeof(double), compare_doubles);
+	
+
+	// Calculate median
+	if (count % 2 == 0) {
+		// Even number of elements - average of middle two
+		double median = (values[(count/2) -1] + values[count/2]) / 2.0;
+		RETURN_DOUBLE(median);
+	}else{
+		// Odd number of elements - middle element
+		RETURN_DOUBLE(values[count/2]);
+	}
+
+	// Free memory
+	efree(values);
 }
+
 
 
 ZEND_BEGIN_ARG_INFO(arginfo_stmathMedian, 0)
