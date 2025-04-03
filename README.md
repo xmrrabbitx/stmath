@@ -1,4 +1,5 @@
 # stmath php extension
+### statistics math extension for php 8.1
 ### Installation in Linux
 ```bash
 $ cd to /yourPhpVersion path
