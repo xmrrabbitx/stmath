@@ -27,3 +27,13 @@ $ add extension to php.ini: extenstion=stmath.so
 ```bash
 $ verify extension is loaded: ../bin/php -dextension=stmath -m | grep stmathsh
 ```
+
+#### Example Median
+```php
+<?php
+
+$median = stmathMedian([1,2,3,4]);
+var_dump($median);
+
+Result: float(2.5)
+```
