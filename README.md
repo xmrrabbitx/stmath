@@ -1,5 +1,5 @@
-# stmath php ext
-### Installatioon in Linux
+# stmath php extension
+### Installation in Linux
 ```bash
 $ cd to /yourPhpVersion path
 ```
