@@ -29,7 +29,7 @@ $ add extension to php.ini: extenstion=stmath.so
 $ verify extension is loaded: ../bin/php -dextension=stmath -m | grep stmathsh
 ```
 
-#### Example Median
+#### Median Example
 ```php
 <?php
 
@@ -39,7 +39,7 @@ var_dump($median);
 Result: float(2.5)
 ```
 
-#### Example Average
+#### Average Example
 ```php
 $average = stmathAverage([2,2,3]);
 var_dump($average);
