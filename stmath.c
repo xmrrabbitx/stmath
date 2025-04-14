@@ -29,6 +29,7 @@ static int compare_doubles(const void *a, const void *b) {
 }
 
 
+// median calculation
 PHP_FUNCTION(stmathMedian){
 
 
@@ -106,6 +107,54 @@ ZEND_BEGIN_ARG_INFO(arginfo_stmathMedian, 0)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
 ZEND_END_ARG_INFO()
 
+
+// average calculation
+PHP_FUNCTION(stmathAverage){
+
+
+	zend_array *arr;
+	double sum = 0;
+	zend_ulong count;
+	zval *val;
+
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) {
+
+		return;
+	}
+
+
+	count = zend_hash_num_elements(arr);
+	if (count == 0) {
+		RETURN_NULL();
+	}
+
+	zend_ulong i = 0;
+	ZEND_HASH_FOREACH_VAL(arr,val){
+
+
+		if (Z_TYPE_P(val) == IS_LONG) {
+			sum += (double)Z_LVAL_P(val);
+		}
+		else if(Z_TYPE_P(val) == IS_DOUBLE) {
+			sum += (double)Z_DVAL_P(val);
+
+		}else{
+			 //count--;
+		}
+
+	} ZEND_HASH_FOREACH_END();
+	
+	
+	RETURN_DOUBLE(sum / count);
+
+	
+}
+ZEND_BEGIN_ARG_INFO(arginfo_stmathAverage, 0)
+ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_END_ARG_INFO()
+
+
 /* {{{ void test1() */
 PHP_FUNCTION(test1)
 {
@@ -156,6 +205,7 @@ PHP_MINFO_FUNCTION(stmath)
 
 static const zend_function_entry stmath_functions[] = {
 		PHP_FE(stmathMedian,             arginfo_stmathMedian)  // Add this line
+		PHP_FE(stmathAverage,             arginfo_stmathAverage)
 		PHP_FE(test1, arginfo_test1)
 		PHP_FE(test2, arginfo_test2)
 		PHP_FE_END
