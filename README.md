@@ -38,3 +38,11 @@ var_dump($median);
 
 Result: float(2.5)
 ```
+
+#### Example Average
+```php
+$average = stmathAverage([2,2,3]);
+var_dump($average);
+
+Result: float(2.3333333333333335)
+```
