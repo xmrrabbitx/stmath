@@ -154,7 +154,7 @@ ZEND_ARG_ARRAY_INFO(0, array, 0)
 ZEND_END_ARG_INFO()
 
 
-// calculate frequency of a string in an array	
+// calculate frequency of a value in an array	
 PHP_FUNCTION(stmathFreq){
 
 		
@@ -178,7 +178,6 @@ PHP_FUNCTION(stmathFreq){
 			}
 		}else{
 		   if (Z_TYPE_P(val) == Z_TYPE_P(search_zval)) { 
-
 				
 			switch (Z_TYPE_P(search_zval)){
 				case IS_DOUBLE: if(Z_DVAL_P(val) == Z_DVAL_P(search_zval)) count++; break;
