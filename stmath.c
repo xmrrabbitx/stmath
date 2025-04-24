@@ -139,19 +139,72 @@ PHP_FUNCTION(stmathAverage){
 		else if(Z_TYPE_P(val) == IS_DOUBLE) {
 			sum += (double)Z_DVAL_P(val);
 
-		}else{
-			 //count--;
 		}
+		
 
 	} ZEND_HASH_FOREACH_END();
 	
 	
 	RETURN_DOUBLE(sum / count);
-
 	
 }
+
 ZEND_BEGIN_ARG_INFO(arginfo_stmathAverage, 0)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_END_ARG_INFO()
+
+
+// calculate frequency of a string in an array	
+PHP_FUNCTION(stmathFreq){
+
+		
+	zend_array *arr;
+	zval *search_zval;
+	zend_long count = 0;
+	zval *val;
+
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "zh", &search_zval, &arr) == FAILURE) {
+
+		return;
+	}
+
+
+	ZEND_HASH_FOREACH_VAL(arr,val){
+		
+		if(Z_TYPE_P(search_zval) == IS_STRING && Z_TYPE_P(val) == IS_STRING){
+			if(zend_string_equals(Z_STR_P(val), Z_STR_P(search_zval))){
+				count++;
+			}
+		}else{
+		   if (Z_TYPE_P(val) == Z_TYPE_P(search_zval)) { 
+
+				
+			switch (Z_TYPE_P(search_zval)){
+				case IS_DOUBLE: if(Z_DVAL_P(val) == Z_DVAL_P(search_zval)) count++; break;
+				case IS_LONG: if(Z_LVAL_P(val) == Z_LVAL_P(search_zval)) count++; break;
+				case IS_TRUE:
+				case IS_FALSE: count++; break;
+				case IS_NULL: count++; break;
+			
+			
+				}   	
+			
+			}
+	
+		}
+		
+	} ZEND_HASH_FOREACH_END();	
+
+
+	RETURN_LONG(count);
+}
+
+
+
+ZEND_BEGIN_ARG_INFO(arginfo_stmathFreq, 0)
+	ZEND_ARG_TYPE_INFO(0, search_zval, IS_MIXED, 0) // zval frequency
+	ZEND_ARG_ARRAY_INFO(0, array, 0)
 ZEND_END_ARG_INFO()
 
 
@@ -206,6 +259,7 @@ PHP_MINFO_FUNCTION(stmath)
 static const zend_function_entry stmath_functions[] = {
 		PHP_FE(stmathMedian,             arginfo_stmathMedian)  // Add this line
 		PHP_FE(stmathAverage,             arginfo_stmathAverage)
+		PHP_FE(stmathFreq,             arginfo_stmathFreq)
 		PHP_FE(test1, arginfo_test1)
 		PHP_FE(test2, arginfo_test2)
 		PHP_FE_END

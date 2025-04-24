@@ -46,3 +46,12 @@ var_dump($average);
 
 Result: float(2.3333333333333335)
 ```
+
+
+#### Frequency Example
+```php
+$frequency = stmathAverage(5,[2,5,5,3,7,5]);
+var_dump($average);
+
+Result: int(3)
+```
