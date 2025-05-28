@@ -16,7 +16,6 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-
 // Comparison function for qsort
 static int compare_doubles(const void *a, const void *b) {
 
@@ -28,10 +27,77 @@ static int compare_doubles(const void *a, const void *b) {
 	return 0;
 }
 
+// Range of an array
+PHP_FUNCTION(stmathRange){
+
+	zend_array *arr;
+	double *values = NULL;
+	zend_ulong count;
+	zval *val;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS(), "h", &arr) == FAILURE) {
+
+		return;
+
+	}
+
+	count = zend_hash_num_elements(arr);
+	if (count == 0) {
+        	RETURN_NULL();
+    	}
+	
+	// Allocate memory for values
+	values = emalloc(count * sizeof(double));
+	if (!values) {
+		php_error_docref(NULL, E_WARNING, "Memory allocation failed");
+		RETURN_NULL();
+	}
+
+	// Copy numeric values to our double array
+	zend_ulong i = 0;
+	ZEND_HASH_FOREACH_VAL(arr,val){
+		// Convert to double if numeric
+		if (Z_TYPE_P(val) == IS_LONG) {
+			values[i++] = (double)Z_LVAL_P(val);
+		}
+		else if(Z_TYPE_P(val) == IS_DOUBLE) {
+			values[i++] = (double)Z_DVAL_P(val);
+
+		}
+		//else{
+
+			// Skip non-numeric values (reduce count)
+		//	count--;
+		
+		//}
+			
+	} ZEND_HASH_FOREACH_END();
+
+	if (count == 0) {
+		efree(values);
+		RETURN_NULL(); // No numeric values
+	}
+
+	// Sort the values
+	qsort(values, count, sizeof(double), compare_doubles);
+
+	double range = values[i - 1] - values[0];
+
+	// Free memory
+	efree(values);
+	
+	RETURN_LONG(range);
+	
+
+}
+	
+ZEND_BEGIN_ARG_INFO(arginfo_stmathRange, 0)
+	ZEND_ARG_ARRAY_INFO(0, array, 0)
+ZEND_END_ARG_INFO()
+
 
 // median calculation
 PHP_FUNCTION(stmathMedian){
-
 
 	zend_array *arr;
 	double *values = NULL;
@@ -66,15 +132,17 @@ PHP_FUNCTION(stmathMedian){
 		else if(Z_TYPE_P(val) == IS_DOUBLE) {
 			values[i++] = (double)Z_DVAL_P(val);
 
-		}else{
+		}
+		//else{
 
 			// Skip non-numeric values (reduce count)
-			count--;
+		//	count--;
 		
-		}
+		//}
 			
 	} ZEND_HASH_FOREACH_END();
 	
+
 	// Check if we have any values left
 	if(count==0){
 
@@ -101,8 +169,6 @@ PHP_FUNCTION(stmathMedian){
 	efree(values);
 }
 
-
-
 ZEND_BEGIN_ARG_INFO(arginfo_stmathMedian, 0)
 ZEND_ARG_ARRAY_INFO(0, array, 0)
 ZEND_END_ARG_INFO()
@@ -110,7 +176,6 @@ ZEND_END_ARG_INFO()
 
 // average calculation
 PHP_FUNCTION(stmathAverage){
-
 
 	zend_array *arr;
 	double sum = 0;
@@ -132,7 +197,6 @@ PHP_FUNCTION(stmathAverage){
 	zend_ulong i = 0;
 	ZEND_HASH_FOREACH_VAL(arr,val){
 
-
 		if (Z_TYPE_P(val) == IS_LONG) {
 			sum += (double)Z_LVAL_P(val);
 		}
@@ -140,10 +204,8 @@ PHP_FUNCTION(stmathAverage){
 			sum += (double)Z_DVAL_P(val);
 
 		}
-		
 
 	} ZEND_HASH_FOREACH_END();
-	
 	
 	RETURN_DOUBLE(sum / count);
 	
@@ -156,19 +218,16 @@ ZEND_END_ARG_INFO()
 
 // calculate frequency of a value in an array	
 PHP_FUNCTION(stmathFreq){
-
 		
 	zend_array *arr;
 	zval *search_zval;
 	zend_long count = 0;
 	zval *val;
 
-
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "zh", &search_zval, &arr) == FAILURE) {
 
 		return;
 	}
-
 
 	ZEND_HASH_FOREACH_VAL(arr,val){
 		
@@ -195,17 +254,14 @@ PHP_FUNCTION(stmathFreq){
 		
 	} ZEND_HASH_FOREACH_END();	
 
-
 	RETURN_LONG(count);
 }
-
 
 
 ZEND_BEGIN_ARG_INFO(arginfo_stmathFreq, 0)
 	ZEND_ARG_TYPE_INFO(0, search_zval, IS_MIXED, 0) // zval frequency
 	ZEND_ARG_ARRAY_INFO(0, array, 0)
 ZEND_END_ARG_INFO()
-
 
 /* {{{ void test1() */
 PHP_FUNCTION(test1)
@@ -256,9 +312,10 @@ PHP_MINFO_FUNCTION(stmath)
 /* }}} */
 
 static const zend_function_entry stmath_functions[] = {
-		PHP_FE(stmathMedian,             arginfo_stmathMedian)  // Add this line
-		PHP_FE(stmathAverage,             arginfo_stmathAverage)
-		PHP_FE(stmathFreq,             arginfo_stmathFreq)
+		PHP_FE(stmathMedian,            arginfo_stmathMedian)  // Add this line
+		PHP_FE(stmathAverage,           arginfo_stmathAverage)
+		PHP_FE(stmathFreq,		arginfo_stmathFreq)
+		PHP_FE(stmathRange, 		arginfo_stmathRange)
 		PHP_FE(test1, arginfo_test1)
 		PHP_FE(test2, arginfo_test2)
 		PHP_FE_END
